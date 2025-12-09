@@ -1,0 +1,12 @@
+import socket
+s=socket.socket()
+s.bind(('127.0.0.1',8080))
+s.listen(1)
+print("Server listening on port 8080...")
+c,addr=s.accept()
+print("Connection from",addr)
+c.send(b"Hello client!")
+msg=c.recv(1024).decode()
+print("Client says:",msg)
+c.close()
+s.close()

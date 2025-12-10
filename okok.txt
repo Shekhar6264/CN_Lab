@@ -1,0 +1,334 @@
+EXP 2. Share Files/Folder, Devices and Printer in the Network and access the shared resources from the other node
+sudo apt install cups
+sudo apt install system-config-printer
+sudo lpadmin -p dummyprinter_D06 -E -v file:///dev/null -m raw
+
+Sharing a printer:
+1. Search for Printers in settings. Open Printers
+2. Add printers and select CUPS printer(dummy printer)
+3. In that printer settings, check the option printer by default.
+4. Click on “additional printer settings”
+5. Right click on printer and check the option “shared”
+6. Click on server menu and select settings options. Check the “publish shared printers
+connected to this system”
+Accessing a printer(in another system):
+1. Search for Printers in settings. Open Printers
+2. Click on “additional printer settings”
+3. Choose the button add and select network printer then select “find network printer”
+4. Enter the device Url “IP address of shared system”
+5. Click on forward button and apply the changes(you can change the printer name if you
+want”).
+6. You will the shared printer and click on the settings button and check the option “use printer
+by default”
+7. Now you are ready to give a printing job.
+8. You can check the job count at “shared printer”.
+
+ Installing Samba
+
+1)To unistall existing software:
+	sudo apt autoremove samba
+2)To install Samba, we run:
+	sudo apt update
+	sudo apt install samba
+
+3)We can check if the installation was successful by running:
+
+	whereis samba
+	setting up Samba
+
+4)Now that Samba is installed, we need to create a directory for		it to share:
+
+	mkdir /home/<username>/data/
+
+5)The configuration file for Samba is located at /etc/samba/smb.conf. To add the new directory as a share, we edit the file by running:
+
+	sudo nano /etc/samba/smb.conf
+
+6)At the bottom of the file, add the following lines:
+
+[data]
+    comment = Samba on Ubuntu
+    path = /home/username/data
+    read only = no
+    browsable = yes
+save the file
+ctrl X , press y , and enter
+
+7)Now that we have our new share configured, save it and restart Samba for it to take effect:
+
+	sudo service smbd restart
+
+8)Update the firewall rules to allow Samba traffic:
+
+	sudo ufw allow samba
+
+9)Since Samba doesn’t use the system account password, we need to set up a Samba password for our user account:
+
+	sudo smbpasswd -a username
+
+10)On Windows, open up File Manager and edit the file path to:
+
+	\\ip-address\sambashare
+
+	On linux
+
+	smb://ip-address/sambashare
+
+EXP 3. Use Wireshark Packet sniffer software and captures TCP,UDP, IP, ARP, ICMP, Telnet, FTP packets
+
+ftp install commands
+$ sudo apt install vsftpd 
+$ sudo systemctl enable vsftpd
+$ sudo systemctl start vsftpd
+$ sudo apt install ftp 
+$ sudo ufw allow 21/tcp
+$ ftp <ip-address>
+
+ssh installation commands -
+$ sudo apt update 
+$ sudo apt install openssh-server
+$ sudo systemctl enable ssh
+$ sudo systemctl start ssh
+$ sudo ufw allow ssh
+$ ssh <username>@<ip-address> 
+
+telnet installation commands - 
+$ sudo apt install telnetd 
+$ sudo ufw allow 23/tcp
+$ sudo apt install telnet 
+$ telnet [ip-address] [port number]
+
+EXP 5. Installation set up of Network simulator software (NS2/NS3/NetSim/OPNET/QualNet/OMNet++/JSim and Cisco Packet Tracer).
+
+ns2:
+
+1️⃣ Update packages
+	sudo apt update
+	sudo apt upgrade -y
+
+2️⃣ Install required dependencies
+	sudo apt install build-essential autoconf automake libxmu-dev -y
+
+3️⃣ Download NS2
+	wget https://sourceforge.net/projects/nsnam/files/allinone/ns-allinone-2.35.tar.gz
+
+4️⃣ Extract
+	tar -xvzf ns-allinone-2.35.tar.gz
+	cd ns-allinone-2.35
+
+5️⃣ Install
+	./install
+
+6️⃣ Set environment variables
+
+Edit .bashrc:
+	nano ~/.bashrc
+
+Add at bottom: (add path save and exit)
+export PATH=$PATH:/home/your-username/ns-allinone-2.35/bin:/home/your-username/ns-allinone-2.35/tcl8.5.10/unix:/home/your-username/ns-allinone-2.35/tk8.5.10/unix
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/home/your-username/ns-allinone-2.35/otcl-1.14:/home/your-username/ns-allinone-2.35/lib
+
+Apply:
+	source ~/.bashrc
+
+7️⃣ Verify Installation
+ns
+it gives % exit as output
+
+nano hello.tcl
+then write puts "helo"
+ctrl o  -> ctrl x -> enter
+ns hello.tcl 
+we will get the output
+
+
+ns3:
+
+1️⃣ Update and Upgrade the System
+sudo apt update
+sudo apt upgrade -y
+
+2️⃣ Install Required Dependencies
+
+These dependencies are needed for building ns-3 using CMake.
+sudo apt install gcc g++ python3 python3-dev cmake ninja-build git -y
+
+3️⃣ Clone the Latest ns-3 Repository
+git clone https://gitlab.com/nsnam/ns-3-dev.git ns-3-dev
+cd ns-3-dev
+
+4️⃣ Build ns-3 Using CMake (NEW STANDARD METHOD)
+
+ns-3 uses a Python wrapper ./ns3 to configure & build.
+
+Configure ns-3
+./ns3 configure --enable-examples --enable-tests
+
+Build ns-3
+./ns3 build
+
+5️⃣ Run a Sample Simulation
+./ns3 run hello-simulator
+
+This will run the example program inside scratch/ if u have default hello simulator 
+else:
+ 1️⃣ Create a file in scratch/
+Example file: scratch/myhello.cc
+
+#include "ns3/core-module.h"
+using namespace ns3;
+
+int main ()
+{
+    std::cout << "Hello NS3 World!" << std::endl;
+    return 0;
+}
+
+2️⃣ Build it : NS3 automatically finds files inside scratch/ during build.
+
+./ns3 build
+
+3️⃣ Run your custom program
+./ns3 run myhello
+
+EXP 10. Implement socket programming
+
+python:
+# server.py
+import socket
+s = socket.socket()
+s.bind(("127.0.0.1", 5566))
+s.listen(1)
+print("Server waiting...")
+c, addr = s.accept()
+print("Client connected.")
+msg = c.recv(1024).decode()
+print("Client:", msg)
+reply = "HI, THIS IS SERVER!"
+c.send(reply.encode())
+c.close()
+s.close()
+
+# client.py
+import socket
+s = socket.socket()
+s.connect(("127.0.0.1", 5566))
+msg = "HELLO, THIS IS CLIENT."
+print("Client:", msg)
+s.send(msg.encode())
+reply = s.recv(1024).decode()
+print("Server:", reply)
+s.close()
+
+
+1.paste the stopwait.cc in /home/student/ns-allinone-3.42/ns-3.42/scratch folder
+open terminal
+>cd /ns-allinone-3.42/ns-3.42
+>./ns3 build
+>./ns3 run scratch/stopwait1
+
+2.Netanim run 
+> ../netanim-3.109/NetAnim 
+-netanim version will be different may be different for different pc's. so type net and click tab.
+-a new window will open . there will be a folder iconn on top left side click on it . then open the .xml file created when run the code.
+
+or try below:
+NS3:
+# 1. Put your file in scratch
+#    /home/student/ns-allinone-3.42/ns-3.42/scratch/socket.cc
+
+# 2. Open terminal and go to ns-3 folder
+cd /home/student/ns-allinone-3.42/ns-3.42
+
+# 3. Build ns-3
+../ns3 build
+
+# 4. Run your program (remove .cc while running)
+../ns3 run scratch/socket
+
+# 5. Run NetAnim (version may vary)
+../netanim-3.109/NetAnim
+
+#    If version unknown, type:
+#    net   and press TAB to auto-complete
+
+# 6. In NetAnim window:
+#    Click the folder icon (top-left)
+#    Browse to your .xml file generated by the run
+#    Open it to see the animation
+
+
+c++
+#include "ns3/core-module.h"
+#include "ns3/network-module.h"
+#include "ns3/internet-module.h"
+#include "ns3/point-to-point-module.h"
+#include "ns3/applications-module.h"
+#include "ns3/netanim-module.h"
+
+using namespace ns3;
+
+NS_LOG_COMPONENT_DEFINE("TcpClientServerAnim");
+
+int main(int argc, char *argv[])
+{
+    // Enable logging
+    LogComponentEnable("PacketSink", LOG_LEVEL_INFO);
+    LogComponentEnable("OnOffApplication", LOG_LEVEL_INFO);
+
+    // Create 2 nodes
+    NodeContainer nodes;
+    nodes.Create(2);
+
+    // Configure point-to-point link
+    PointToPointHelper pointToPoint;
+    pointToPoint.SetDeviceAttribute("DataRate", StringValue("5Mbps"));
+    pointToPoint.SetChannelAttribute("Delay", StringValue("2ms"));
+
+    // Install network devices
+    NetDeviceContainer devices;
+    devices = pointToPoint.Install(nodes);
+
+    // Install Internet stack
+    InternetStackHelper stack;
+    stack.Install(nodes);
+
+    // Assign IP addresses
+    Ipv4AddressHelper address;
+    address.SetBase("10.1.1.0", "255.255.255.0");
+    Ipv4InterfaceContainer interfaces = address.Assign(devices);
+
+    // Create TCP sink (server)
+    uint16_t port = 5566;
+    Address sinkAddress(InetSocketAddress(interfaces.GetAddress(1), port));
+    PacketSinkHelper packetSinkHelper("ns3::TcpSocketFactory", InetSocketAddress(Ipv4Address::GetAny(), port));
+    ApplicationContainer sinkApp = packetSinkHelper.Install(nodes.Get(1));
+    sinkApp.Start(Seconds(1.0));
+    sinkApp.Stop(Seconds(10.0));
+
+    // Create TCP client (OnOff app)
+    OnOffHelper client("ns3::TcpSocketFactory", sinkAddress);
+    client.SetAttribute("DataRate", StringValue("1Mbps"));
+    client.SetAttribute("PacketSize", UintegerValue(1024));
+    client.SetAttribute("OnTime", StringValue("ns3::ConstantRandomVariable[Constant=1]"));
+    client.SetAttribute("OffTime", StringValue("ns3::ConstantRandomVariable[Constant=0]"));
+
+    ApplicationContainer clientApp = client.Install(nodes.Get(0));
+    clientApp.Start(Seconds(2.0));
+    clientApp.Stop(Seconds(9.0));
+
+    // Enable packet tracing (optional)
+    pointToPoint.EnablePcapAll("tcp_client_server_anim");
+
+    // NetAnim setup
+    AnimationInterface anim("tcp_client_server_anim.xml");
+    anim.SetConstantPosition(nodes.Get(0), 10, 20);
+    anim.SetConstantPosition(nodes.Get(1), 50, 20);
+
+    // Run simulation
+    Simulator::Stop(Seconds(10.0));
+    Simulator::Run();
+    Simulator::Destroy();
+
+    return 0;
+}
